@@ -1,0 +1,157 @@
+'use strict'
+const path = require('path')
+const Webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')    // 压缩css，生产与开发都不会自动压缩css，js生产会压缩开发不会，这个插件会导致js生产压缩失效，需要通过UglifyjsWebpackPlugin解决
+const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')        // webpack压缩js默认使用的这个插件
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')          // 每次打包前清空上一次打包后的文件
+const { sit, uat, prd } = require('./global.config')
+
+const env = process.env.ENV_TAG === 'sit' ? sit : process.env.ENV_TAG === 'uat' ? uat : prd
+
+function resolve(dir) {
+  return path.join(__dirname, '..', dir)                                // 没有会自动创建目录
+}
+
+module.exports = {
+  mode: process.env.NODE_ENV,
+  entry: [resolve('src/main.js')],
+  output: {
+    filename: '[name].js',						                                  // 取entry配置的入口文件名与后缀 [name]，output不支持[ext] 只有 [hash], [chunkhash], [name], [id], [query]，当entry值是对象时，自动取属性名
+    path: resolve('dist')                                             // 文件输出的目录
+  },
+  optimization: {
+    minimizer: [
+      new UglifyjsWebpackPlugin({                                       // js压缩，删除空行、变成一行
+        cache: true,                                                    // 是否用缓存
+        parallel: true,                                                 // 是否并发压缩
+        sourceMap: true                                                 // 源码映射，会单独生成一个sourcemap文件。压缩后代码难以阅读，此项配置可以有一个没有压缩的源码映射，可以方便调试
+      }),
+      new OptimizeCssAssetsWebpackPlugin()                              // 使用默认配置进行css压缩，删除空行、变成一行
+    ]
+  },
+  module: {
+    rules: [{
+      oneOf: [
+        {
+          test: /\.(css)$/,
+          use: [
+            // {
+            //   loader: 'style-loader'                                 // loader从右向左执行、从下到上执行 创建style标签将css-loader生成的js模块化文件中的样式资源插入页面生效
+            //   options: { insertAt: 'top' }                           // 将生成的css插入<style>的顶部，这样<style>中自定义的css永远在底部，可以覆盖生成的样式
+            // },
+            MiniCssExtractPlugin.loader,                                // 既然通过link标签引入了，就与上面的insertAt: 'top' ，选择一种方式使用吧
+            'css-loader',                                               // css 模块化
+            'postcss-loader'                                            // css 自动加兼容性前缀
+          ]
+        },
+        {
+          test: /\.(scss)$/,
+          use: [
+            MiniCssExtractPlugin.loader,                                // 既然通过link标签引入了，就与上面的insertAt: 'top' ，选择一种方式使用吧
+            'css-loader',                                               // css 模块化
+            'postcss-loader',                                           // css 自动加兼容性前缀
+            'sass-loader'                                               // sass 转 css  less-loader stylus-loader
+          ]
+        },
+        {
+          test: /\.js$/,                                                // 处理js 需要安装 babel-loader @babel/core @babel/preset-env
+          include: [resolve('src')],                                    // 默认匹配所有js ，所以可以只对指定目录下js起作用
+          exclude: /node_modules/,
+          use: [
+            'thread-loader',                                            // 开启多进程打包。 进程启动大概为600ms，进程通信也有开销。只有工作消耗时间比较长，才需要多进程打包
+            {
+              loader: 'thread-loader',
+              options: {
+                workers: 2 // 进程2个
+              }
+            },
+            {
+              loader: 'babel-loader?optional=runtime&cacheDirectory',   // babel-loader在执行的时候，可能会产生一些运行期间重复的公共文件，造成代码体积大冗余，同时也会减慢编译效率，可以加上cacheDirectory参数或使用 transform-runtime 插件(bablerc文件支持)
+              options: {
+                presets: [										                          // 预设：指示babel做怎么样的兼容性处理
+                  [
+                    '@babel/preset-env',
+                    {
+                      useBuiltIns: 'usage',		                          // 按需加载
+                      corejs: {								                          // 指定core-js版本
+                        version: 3
+                      },
+                      targets: {							                          // 指定js语法兼容性做到浏览器哪个版本
+                        chrome: '60',
+                        firefox: '60',
+                        ie: '9',
+                        safari: '10',
+                        edge: '17'
+                      }
+                    }
+                  ]
+                ]
+                // cacheDirectory: true
+              }
+            }
+          ]
+        },
+        {
+          test: /\.(woff(2)?|eot|ttf|otf)(\?.*)?$/,                     // 处理字体图标文件
+          use: [{
+            loader: 'url-loader',
+            options: {
+              limit: 1024,
+              name: 'font/[name].[hash:8].[ext]',
+              publicPath: 'https://local.xoxo.com/'
+            }
+          }]
+        },
+        {
+          test: /\.(jp(e)?g|png|gif|bmp|svg)(\?.*)?$/,	                // 处理图片 需要安装 url-loader file-loader 插件，url-loader 依赖 file-loader
+          use: [
+            {
+              loader: 'url-loader',                                     // 图片大小<=指定字节就转成BASE64字串形式，可以不用发图片请求，图片大小大于指定字节，就用file-loader生成图片到输出目录  url-loader只能处理样式中的图片
+              options: {                                                // 优点：减少请求数量，减轻服务器压力。 缺点：图片体积会更大，文件请求更慢。处理不了img src引入的图片，因为没有解析html文件
+                limit: 8 * 1024,                                        // 图片小于8kb转为base64
+                outputPath: 'img/',                                     // 指定图片输出目录 publicPath + outputPath
+                publicPath: 'https://local.xoxo.com/',                  // 自动给引入的资源统一加上这个路径，方便CDN上的资源引用
+                esModule: false,                                        // 关闭es6，使用commonjs
+                name: '[hash:8].[ext]'                                  // 不想图片默认名称那么长，可以重命名，[ext]取文件的原扩展名
+              }
+            }
+          ]
+        },
+        {
+          exclude: /\.(css|js|html|less|sass|jpg|png|gif|woff(2)?|eot|ttf|otf)$/,    // 处理其它资源都会通过file-loader进行处理
+          loader: 'file-loader',
+          options: {
+            name: '[hash:8].[ext]',
+            outputPath: 'other/',
+            publicPath: 'https://local.xoxo.com/'
+          }
+        }
+      ]
+    }]
+  },
+  plugins: [
+    new Webpack.DefinePlugin({                                          // 让vue页面中访问环境变量：const env = `${process.env.BASEURL}`
+      'process.env': env
+    }),
+    new HtmlWebpackPlugin({
+      template: './public/index.html',                                  // 复制源模板文件到output输出目录下，并在页面中自动引入打包后的所有资源
+      filename: 'index.[hash:8].html',                                  // 打包生成的文件名，不指定默认用原来的
+      title: 'xoxo-web',                                                // 用来生成页面的 title 元素，如果模板中有设置title的名字，则会忽略这里的设置
+      inject: true,                                                     // true|'head'|'body'|false，取值 true|'body'，js 资源将被放置到body元素的底部，取值'head' 将放置到 head 元素中。false则插入生成的js中
+      favicon: './public/favicon.ico',                                  // 指定页面图标，<link rel='shortcut icon' href='favicon.ico'>
+      minify: {
+        collapseWhitespace: true,                                       // html压缩，删除空行、变成一行
+        collapseBooleanAttributes: true,                                // 是否简写boolean格式的属性如：disabled="disabled"简写为disabled,默认false
+        removeComments: true,						                                // 移除注释
+        removeAttributeQuotes: true                                     // 删除页面中属性上的无用的双引号
+      }
+      // hash: true                                                     // 是否生成hash添加在所有引入文件地址的末尾，可以解决缓存问题 src="./index.js?5c5c5c5c5c5c5cccc"
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'css/index.[hash:8].css'                                // 抽离css样式，指定css生成目录与文件名
+    }),
+    new CleanWebpackPlugin()
+  ]
+}
