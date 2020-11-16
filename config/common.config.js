@@ -13,14 +13,17 @@ const env = process.env.ENV_TAG === 'sit' ? sit : process.env.ENV_TAG === 'uat' 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)                                // 没有会自动创建目录
 }
-
+console.log(resolve('src/main.js'))
+console.log(resolve('dist'))
+console.log(resolve('public/index.html'))
+console.log(resolve('public/favicon.ico'))
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: [resolve('src/main.js')],
   output: {
     filename: '[name].js',						                                  // 取entry配置的入口文件名与后缀 [name]，output不支持[ext] 只有 [hash], [chunkhash], [name], [id], [query]，当entry值是对象时，自动取属性名
-    path: resolve('dist'),                                              // 文件输出的目录
-    publicPath: '/'                                                     // 自动给引入的资源统一加上这个路径，方便CDN上的资源引用
+    path: resolve('dist'),                                              // 文件输出的目录，仅仅告诉Webpack结果存储在哪里，必须是一个绝对路径
+    publicPath: 'https://local.vuo.com/'                                // 自动给引入的资源统一加上这个路径，方便CDN上的资源引用，被许多Webpack的插件用于在生产模式下更新内嵌到css、html文件里的url值
   },
   optimization: {
     minimizer: [
@@ -139,11 +142,11 @@ module.exports = {
       'process.env': env
     }),
     new HtmlWebpackPlugin({
-      template: './public/index.html',                                  // 复制源模板文件到output输出目录下，并在页面中自动引入打包后的所有资源
-      filename: 'index.[hash:8].html',                                  // 打包生成的文件名，不指定默认用原来的
+      template: resolve('public/index.html'),                           // 复制源模板文件到output输出目录下，并在页面中自动引入打包后的所有资源
+      filename: 'index.html',                                           // 打包生成的文件名，不指定默认用原来的
       title: 'vuo-web',                                                 // 用来生成页面的 title 元素，如果模板中有设置title的名字，则会忽略这里的设置
       inject: true,                                                     // true|'head'|'body'|false，取值 true|'body'，js 资源将被放置到body元素的底部，取值'head' 将放置到 head 元素中。false则插入生成的js中
-      favicon: './public/favicon.ico',                                  // 指定页面图标，<link rel='shortcut icon' href='favicon.ico'>
+      favicon: resolve('public/favicon.ico'),                                 // 指定页面图标，<link rel='shortcut icon' href='favicon.ico'>
       minify: {
         collapseWhitespace: true,                                       // html压缩，删除空行、变成一行
         collapseBooleanAttributes: true,                                // 是否简写boolean格式的属性如：disabled="disabled"简写为disabled,默认false
@@ -155,6 +158,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'css/index.[hash:8].css'                                // 抽离css样式，指定css生成目录与文件名
     }),
-    new CleanWebpackPlugin([resolve('dist')])
+    new CleanWebpackPlugin()                                            // 删除webpack的output.path目录中的所有文件，以及每次成功重建后所有未使用的webpack资产
   ]
 }
