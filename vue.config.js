@@ -8,8 +8,8 @@ if (process.env.NODE_ENV === 'development') {
     devServer: {                                                          // webpack-dev-server ^3.11.0 之前的版本，需使用 webpack-cli ^3.3.12
       hot: true,                                                          // 开启HMR功能
       https: true,                                                        // 开启https
-      // host: 'local.vuo.com',                                              // 主机
-      // port: 443,		                                                      // 端口
+      host: 'local.vuo.com',                                              // 主机
+      port: 443,		                                                      // 端口
       progress: true,		                                                  // 进度条
       contentBase: './dist',	                                            // 用于运行打包后的静态资源目录
       compress: true,		                                                  // 启动gzip压缩，让代码体积更好，速度更快
