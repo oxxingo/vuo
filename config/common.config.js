@@ -19,7 +19,8 @@ module.exports = {
   entry: [resolve('src/main.js')],
   output: {
     filename: '[name].js',						                                  // 取entry配置的入口文件名与后缀 [name]，output不支持[ext] 只有 [hash], [chunkhash], [name], [id], [query]，当entry值是对象时，自动取属性名
-    path: resolve('dist')                                             // 文件输出的目录
+    path: resolve('dist'),                                              // 文件输出的目录
+    publicPath: '/'                                                     // 自动给引入的资源统一加上这个路径，方便CDN上的资源引用
   },
   optimization: {
     minimizer: [
@@ -32,6 +33,7 @@ module.exports = {
     ]
   },
   module: {
+    noParse: '/jquery|lodash/',                                         // 不解析指定模块的依赖关系，因为它不依赖其它模块，没有依赖关系，节省时间
     rules: [{
       oneOf: [
         {
@@ -94,13 +96,16 @@ module.exports = {
           ]
         },
         {
+          test: require.resolve('jquery'),                              // expose-loader插件暴露全局变量jquery的$符形式给window，写法二： import $ from 'expose-loader?$!jquery'
+          use: 'expose-loader?$!jquery'
+        },
+        {
           test: /\.(woff(2)?|eot|ttf|otf)(\?.*)?$/,                     // 处理字体图标文件
           use: [{
             loader: 'url-loader',
             options: {
               limit: 1024,
-              name: 'font/[name].[hash:8].[ext]',
-              publicPath: 'https://local.xoxo.com/'
+              name: 'font/[name].[hash:8].[ext]'
             }
           }]
         },
@@ -112,8 +117,7 @@ module.exports = {
               options: {                                                // 优点：减少请求数量，减轻服务器压力。 缺点：图片体积会更大，文件请求更慢。处理不了img src引入的图片，因为没有解析html文件
                 limit: 8 * 1024,                                        // 图片小于8kb转为base64
                 outputPath: 'img/',                                     // 指定图片输出目录 publicPath + outputPath
-                publicPath: 'https://local.xoxo.com/',                  // 自动给引入的资源统一加上这个路径，方便CDN上的资源引用
-                esModule: false,                                        // 关闭es6，使用commonjs
+                esModule: false,                                        // 因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs，所以解析时会出问题：[object Module]，需要关闭url-loader的es6模块化
                 name: '[hash:8].[ext]'                                  // 不想图片默认名称那么长，可以重命名，[ext]取文件的原扩展名
               }
             }
@@ -124,8 +128,7 @@ module.exports = {
           loader: 'file-loader',
           options: {
             name: '[hash:8].[ext]',
-            outputPath: 'other/',
-            publicPath: 'https://local.xoxo.com/'
+            outputPath: 'other/'
           }
         }
       ]
@@ -138,7 +141,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',                                  // 复制源模板文件到output输出目录下，并在页面中自动引入打包后的所有资源
       filename: 'index.[hash:8].html',                                  // 打包生成的文件名，不指定默认用原来的
-      title: 'xoxo-web',                                                // 用来生成页面的 title 元素，如果模板中有设置title的名字，则会忽略这里的设置
+      title: 'vuo-web',                                                 // 用来生成页面的 title 元素，如果模板中有设置title的名字，则会忽略这里的设置
       inject: true,                                                     // true|'head'|'body'|false，取值 true|'body'，js 资源将被放置到body元素的底部，取值'head' 将放置到 head 元素中。false则插入生成的js中
       favicon: './public/favicon.ico',                                  // 指定页面图标，<link rel='shortcut icon' href='favicon.ico'>
       minify: {
@@ -152,6 +155,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'css/index.[hash:8].css'                                // 抽离css样式，指定css生成目录与文件名
     }),
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin([resolve('dist')])
   ]
 }

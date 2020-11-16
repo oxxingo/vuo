@@ -8,15 +8,15 @@ if (process.env.NODE_ENV === 'development') {
     devServer: {                                                          // webpack-dev-server ^3.11.0 之前的版本，需使用 webpack-cli ^3.3.12
       hot: true,                                                          // 开启HMR功能
       https: true,                                                        // 开启https
-      host: 'local.xoxo.com',                                             // 主机
-      port: 443,		                                                      // 端口
+      // host: 'local.vuo.com',                                              // 主机
+      // port: 443,		                                                      // 端口
       progress: true,		                                                  // 进度条
       contentBase: './dist',	                                            // 用于运行打包后的静态资源目录
       compress: true,		                                                  // 启动gzip压缩，让代码体积更好，速度更快
       open: false,                                                        // 是否自动打开浏览器
       proxy: {                                                            // 配置请求代理解决跨域
         '/api': {
-          target: 'https://www.xoxo.com',
+          target: 'https://www.vuo.com',
           pathRewrite: { '/api': '' }
         }
       }
