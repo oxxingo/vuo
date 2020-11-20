@@ -60,7 +60,7 @@ module.exports = {
     'comma-spacing': [2, { before: false, after: true }],                           // 逗号前后是否空格
     'comma-style': [2, 'last'],                                                     // 换行时逗号在行首还是行尾
     'constructor-super': 2,                                                         // 非派生类不能调用super，派生类必须调用super
-    "consistent-this": [2, "that"],                                                 // 强制this别名为that
+    // "consistent-this": [2, "that"],                                                 // 强制this别名为that
     'curly': [2, 'multi-line'],                                                     // 当一个块只包含一条语句时，是否允许省略花括号 all 不允许  multi-line 允许
     'dot-location': [2, 'property'],                                                // 对象访问符.的位置，换行时在行首还是行尾，property 位于同一行
     'eol-last': 2,                                                                  // 强制文件以换行符结束（LF）
@@ -119,7 +119,7 @@ module.exports = {
     'no-sparse-arrays': 2,                                                          // 禁止稀疏数组， [1, ,2]
     'no-this-before-super': 2,                                                      // 在调用super()之前不能使用this或super
     'no-throw-literal': 2,                                                          // 禁止抛出字面量错误 throw "error";
-
+    'no-useless-escape': 0,                                                         // 是否禁用不必要的转义字符
     'no-undef': 2,                                                                  // 不能有未定义的变量
     'no-undef-init': 2,                                                             // 变量初始化时不能直接给它赋值为undefined
     'no-unexpected-multiline': 2,                                                   // 避免多行表达式

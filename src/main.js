@@ -1,18 +1,45 @@
-import './asserts/iconfont/iconfont.css'
-import './sass/index.scss'
-import './asserts/global.css'
+import Vue from 'vue'
 
-const fn = () => {
+import Cookies from 'js-cookie'
 
+import 'normalize.css/normalize.css'
+
+import Element from 'element-ui'
+import './styles/element-variables.scss'
+
+import '@/styles/index.scss'
+
+import App from './App'
+// import store from './store'
+// import router from './router'
+
+import i18n from './lang'
+import './icons'
+// import './permission'
+import './utils/error-log'
+
+import * as filters from './filters'
+
+if (process.env.NODE_ENV === 'production') {
+  const { mockXHR } = require('../mock')
+  mockXHR()
 }
-fn()
 
-function * async() {
+Vue.use(Element, {
+  size: Cookies.get('size') || 'medium',
+  i18n: (key, value) => i18n.t(key, value)
+})
 
-}
-async()
+Object.keys(filters).forEach((key) => {
+  Vue.filter(key, filters[key])
+})
 
-class Parent {}
-new Parent()
+Vue.config.productionTip = false
 
-console.log('object')
+new Vue({
+  el: '#app',
+  // router,
+  // store,
+  i18n,
+  render: (h) => h(App)
+})

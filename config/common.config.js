@@ -25,6 +25,13 @@ module.exports = {
     path: resolve('dist'),                                              // 文件输出的目录，仅仅告诉Webpack结果存储在哪里，必须是一个绝对路径
     publicPath: 'https://local.vuo.com/'                                // 自动给引入的资源统一加上这个路径，方便CDN上的资源引用，被许多Webpack的插件用于在生产模式下更新内嵌到css、html文件里的url值
   },
+  resolve: {
+    modules: [resolve('node_modules')],                                 // 查找模块时，只在指定目录查找，缩小查找范围，不再去上一级目录找
+    extensions: ['.js', '.vue', '.jsx', 'css', 'json'],                 // 查找模块时，不写模块后缀时的依次查找规则：js .css .json .vue
+    alias: {
+      '@': path.join(__dirname, 'src')
+    }
+  },
   optimization: {
     minimizer: [
       new UglifyjsWebpackPlugin({                                       // js压缩，删除空行、变成一行
