@@ -1,14 +1,15 @@
 'use strict'
 const WebpackMerge = require('webpack-merge')
 const CommonConfig = require('./config/common.config')
-const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')    // 生产环境，自动压缩html、css、js压缩css，开发环境不会自动压缩。如果开发环境配置这个插件压缩css会导致js压缩失效，需要通过UglifyjsWebpackPlugin解决
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')  // 生产环境，自动压缩html、css、js压缩css，开发环境不会自动压缩。如果开发环境配置这个插件压缩css会导致js压缩失效，需要通过UglifyjsWebpackPlugin解决
 
 if (process.env.NODE_ENV === 'development') {
   module.exports = WebpackMerge.merge(CommonConfig, {
-    devServer: {                                                          // webpack-dev-server ^3.11.0 之前的版本，需使用 webpack-cli ^3.3.12
+    devServer: {                                                          // devServer配置会被webpack-dev-server使用，并从不同方面做定制（webpack-dev-server ^3.11.0 之前的版本，需使用 webpack-cli ^3.3.12）
       hot: true,                                                          // 开启HMR功能
       https: true,                                                        // 开启https
       host: 'local.vuo.com',                                              // 主机
+      inline: true,
       port: 443,		                                                      // 端口
       progress: true,		                                                  // 进度条
       contentBase: './dist',	                                            // 用于运行打包后的静态资源目录
