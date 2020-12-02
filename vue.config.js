@@ -5,17 +5,24 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 
 if (process.env.NODE_ENV === 'development') {
   module.exports = WebpackMerge.merge(CommonConfig, {
-    devServer: {                                                          // devServer配置会被webpack-dev-server使用，并从不同方面做定制（webpack-dev-server ^3.11.0 之前的版本，需使用 webpack-cli ^3.3.12）
-      hot: true,                                                          // 开启HMR功能
-      https: true,                                                        // 开启https
-      host: 'local.vuo.com',                                              // 主机
-      inline: true,
-      port: 443,		                                                      // 端口
-      progress: true,		                                                  // 进度条
-      contentBase: './dist',	                                            // 用于运行打包后的静态资源目录
-      compress: true,		                                                  // 启动gzip压缩，让代码体积更好，速度更快
-      open: false,                                                        // 是否自动打开浏览器
-      proxy: {                                                            // 配置请求代理解决跨域
+    devServer: {                                               // devServer配置会被webpack-dev-server使用，并从不同方面做定制（webpack-dev-server ^3.11.0 之前的版本，需使用 webpack-cli ^3.3.12）
+      https: true,                                             // 开启https
+      host: 'local.vuo.com',                                   // 主机
+      port: 443,		                                           // 端口
+      historyApiFallback: {                                    // 用来应对返回404页面时定向到特定页面用的
+        rewrites: [{ from: /./, to: '/error.html' }]
+      },
+      hot: true,                                               // 开启HMR功能
+      inline: true,                                            //
+      clientLogLevel: 'none',                                  // 禁止显示调试信息：当使用inline模式，控制台中将会输出调试信息，会让输出变得比较乱
+      overlay: true,                                           // 编译出错时，在浏览器页面上显示错误
+      stats: 'errors-only',                                    // 编译时的输出内容，没有设置时许多看似不重要的文件也被打印出来了，可以设置下，只打印错误
+      progress: true,		                                       // 进度条
+      contentBase: './public',	                               // 指定了服务器资源的根目录
+      watchContentBase: true,                                  // 监视 contentBase 目录下的所有文件，一旦文件变化就会 reload
+      compress: true,		                                       // 是否启动gzip压缩对所有的服务器资源，优点：对JS，CSS资源的压缩率很高，可以极大得提高文件传输的速率，从而提升web性能  缺点：服务端要对文件进行压缩，而客户端要进行解压，增加了两边的负载
+      open: false,                                             // 是否自动打开浏览器
+      proxy: {                                                 // 配置请求代理解决跨域
         '/api': {
           target: 'https://www.vuo.com',
           pathRewrite: { '/api': '' }
@@ -23,7 +30,7 @@ if (process.env.NODE_ENV === 'development') {
       }
     },
     plugins: [
-      new OptimizeCssAssetsWebpackPlugin()                                // 使用默认配置进行css压缩，删除空行、变成一行
+      new OptimizeCssAssetsWebpackPlugin()                     // 使用默认配置进行css压缩，删除空行、变成一行
     ]
   })
 } else {

@@ -50,11 +50,6 @@ module.exports = {
         }
       },
       {
-        test: /\.jsx?$/,
-        // include: [join('src')],
-        loader: 'babel-loader'
-      },
-      {
         oneOf: [
           {
             test: /\.(css)$/,
@@ -78,7 +73,7 @@ module.exports = {
             ]
           },
           {
-            test: /\.js$/,                                                // 处理js 需要安装 babel-loader @babel/core @babel/preset-env
+            test: /\.(js|jsx)$/,                                          // 处理js，jsx 需要安装 babel-loader @babel/core @babel/preset-env
             include: [resolve('src')],                                    // 默认匹配所有js ，所以可以只对指定目录下js起作用
             exclude: /node_modules/,
             use: [
@@ -109,18 +104,18 @@ module.exports = {
                         }
                       }
                     ]
-                  ]
-                // cacheDirectory: true
+                  ],
+                  cacheDirectory: true
                 }
               }
             ]
           },
           {
-            test: require.resolve('jquery'),                              // expose-loader插件暴露全局变量jquery的$符形式给window，写法二： import $ from 'expose-loader?$!jquery'
+            test: require.resolve('jquery'),                          // expose-loader插件暴露全局变量jquery的$符形式给window，写法二： import $ from 'expose-loader?$!jquery'
             use: 'expose-loader?$!jquery'
           },
           {
-            test: /\.(woff(2)?|eot|ttf|otf)(\?.*)?$/,                     // 处理字体图标文件
+            test: /\.(woff(2)?|eot|ttf|otf)(\?.*)?$/,                 // 处理字体图标文件
             use: [{
               loader: 'url-loader',
               options: {
@@ -131,28 +126,25 @@ module.exports = {
           },
           {
             test: /\.svg$/,
-            loader: 'svg-sprite-loader',
-            include: [resolve('src/icons')],
+            loader: 'svg-sprite-loader',                              // 将加载的 svg 图片拼接成 雪碧图，放到页面中，其它地方通过 <use> 复用
+            include: [resolve('src/icons')],                          // 只有src/icons下的svg使用svg-sprite-loader编译
             options: {
-              symbolId: 'icon-[name]'
+              symbolId: 'icon-[name]'                                 // 编译时把svg的文件名前添加上icon，方便使用
             }
           },
           {
-            test: /\.(jp(e)?g|png|gif|bmp)(\?.*)?$/,	                // 处理图片 需要安装 url-loader file-loader 插件，url-loader 依赖 file-loader
-            use: [
-              {
-                loader: 'url-loader',                                     // 图片大小<=指定字节就转成BASE64字串形式，可以不用发图片请求，图片大小大于指定字节，就用file-loader生成图片到输出目录  url-loader只能处理样式中的图片
-                options: {                                                // 优点：减少请求数量，减轻服务器压力。 缺点：图片体积会更大，文件请求更慢。处理不了img src引入的图片，因为没有解析html文件
-                  limit: 8 * 1024,                                        // 图片小于8kb转为base64
-                  outputPath: 'img/',                                     // 指定图片输出目录 publicPath + outputPath
-                  esModule: false,                                        // 因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs，所以解析时会出问题：[object Module]，需要关闭url-loader的es6模块化
-                  name: '[hash:8].[ext]'                                  // 不想图片默认名称那么长，可以重命名，[ext]取文件的原扩展名
-                }
-              }
-            ]
+            test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+            loader: 'url-loader',
+            exclude: [resolve('src/icons')],                          // src/icons下的svg文件都不使用url-loader编译
+            options: {                                                // 优点：减少请求数量，减轻服务器压力。 缺点：图片体积会更大，文件请求更慢。处理不了img src引入的图片，因为没有解析html文件
+              limit: 8 * 1024,                                        // 图片小于8kb转为base64
+              outputPath: 'img/',                                     // 指定图片输出目录 publicPath + outputPath
+              esModule: false,                                        // 因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs，所以解析时会出问题：[object Module]，需要关闭url-loader的es6模块化
+              name: '[hash:8].[ext]'                                  // 不想图片默认名称那么长，可以重命名，[ext]取文件的原扩展名
+            }
           },
           {
-            exclude: /\.(css|js|html|less|sass|jpg|png|gif|woff(2)?|eot|ttf|otf)$/,    // 处理其它资源都会通过file-loader进行处理
+            exclude: /\.(css|js|html|less|sass|jpe?g|png|gif|woff(2)?|eot|ttf|otf)$/,    // 处理其它资源都会通过file-loader进行处理
             loader: 'file-loader',
             options: {
               name: '[hash:8].[ext]',

@@ -14,7 +14,7 @@ import App from './App'
 // import router from './router'
 
 import i18n from './lang'
-// import './icons'
+import './icons'
 // import './permission'
 import './utils/error-log'
 
