@@ -11,7 +11,7 @@ import '@/styles/index.scss'
 
 import App from './App'
 // import store from './store'
-// import router from './router'
+import router from './router'
 
 import i18n from './lang'
 import './icons'
@@ -37,9 +37,8 @@ Object.keys(filters).forEach((key) => {
 Vue.config.productionTip = false
 
 new Vue({
-  el: '#app',
-  // router,
+  router,
   // store,
   i18n,
   render: (h) => h(App)
-})
+}).$mount('#app')                                 // 把App.vue组件替换index.html中的id='app'元素

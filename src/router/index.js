@@ -8,8 +8,7 @@ import Layout from '@/layout'
 
 /**
  * hidden: true                   如果设置为true，则不会在侧边栏中显示该项（默认为false）
- * alwaysShow: true               如果设置为true，将始终显示根菜单
- *                                如果未设置alwaysShow，则当项目有多个子路线时，它将变成嵌套模式，否则不显示根菜单
+ * alwaysShow: true               如果设置为true，将始终显示根菜单，如果未设置alwaysShow，则当项目有多个子路线时，它将变成嵌套模式，否则不显示根菜单
  * redirect: noRedirect           如果取值 noRedirect将不会在breadcrumb中重定向
  * name:'router-name'             如果路由想被 <keep-alive> 缓存，必须设置该项
  * meta : {
@@ -35,6 +34,11 @@ export const constantRoutes = [
         component: () => import('@/views/redirect/index')
       }
     ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
   }
 ]
 
