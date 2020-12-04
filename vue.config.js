@@ -22,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
       watchContentBase: true,                                  // 监视 contentBase 目录下的所有文件，一旦文件变化就会 reload
       compress: true,		                                       // 是否启动gzip压缩对所有的服务器资源，优点：对JS，CSS资源的压缩率很高，可以极大得提高文件传输的速率，从而提升web性能  缺点：服务端要对文件进行压缩，而客户端要进行解压，增加了两边的负载
       open: false,                                             // 是否自动打开浏览器
+      before: require('./mock/mock-server.js'),                // 在 webpack-dev-server 静态资源中间件处理之前，拦截部分请求返回特定内容
       proxy: {                                                 // 配置请求代理解决跨域
         '/api': {
           target: 'https://www.vuo.com',

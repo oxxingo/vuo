@@ -1,44 +1,49 @@
-import Vue from 'vue'
+import Vue from 'vue/dist/vue.esm.js'
+// import Cookies from 'js-cookie'
 
-import Cookies from 'js-cookie'
+// import 'normalize.css/normalize.css'                   // 让不同浏览器在渲染网页元素的时候形式更统一，相比于传统的CSS reset,它是一种现代的、为HTML5准备的优质替代方案。是一种CSS reset的替代方案
+// import Element from 'element-ui'
+// import './styles/element-variables.scss'
+// import '@/styles/index.scss'
 
-import 'normalize.css/normalize.css'
+import App from './App.vue'
+// // import store from './store'
+// import router from './router'
 
-import Element from 'element-ui'
-import './styles/element-variables.scss'
+// import i18n from './lang'
+// import './icons'
+// // import './permission'
+// import './utils/error-log'
 
-import '@/styles/index.scss'
+// import * as filters from './filters'
+// Object.keys(filters).forEach(key => {
+//   Vue.filter(key, filters[key])                       // 注册全局过滤器
+// })
 
-import App from './App'
-// import store from './store'
-import router from './router'
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
-import i18n from './lang'
-import './icons'
-// import './permission'
-import './utils/error-log'
+// Vue.use(Element, {
+//   size: Cookies.get('size') || 'medium',
+//   i18n: (key, value) => i18n.t(key, value)
+// })
 
-import * as filters from './filters'
+// Vue.config.productionTip = false
 
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// vue有两种形式的代码 compiler（模板）模式和runtime模式（运行时）  https://blog.csdn.net/wxl1555/article/details/83187647
+// compiler
+// new Vue({
+//   el: '#app',
+//   template: '<App/>',
+//   components: { App }
+// })
 
-Vue.use(Element, {
-  size: Cookies.get('size') || 'medium',
-  i18n: (key, value) => i18n.t(key, value)
-})
-
-Object.keys(filters).forEach((key) => {
-  Vue.filter(key, filters[key])
-})
-
-Vue.config.productionTip = false
-
+// runtime
 new Vue({
-  router,
+  // router,
   // store,
-  i18n,
+  // i18n,
   render: (h) => h(App)
 }).$mount('#app')                                 // 把App.vue组件替换index.html中的id='app'元素

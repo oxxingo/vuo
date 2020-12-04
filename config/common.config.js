@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩
 const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')        // webpack压缩js默认使用的这个插件
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')          // 每次打包前清空上一次打包后的文件
-const { VueLoaderPlugin } = require('vue-loader')                       // const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')                       // const VueLoaderPlugin = require('vue-loader/lib/plugin')，装了vue-loader就不要装vue-loader-plugin
 const { sit, uat, prd } = require('./global.config')
 
 const env = process.env.ENV_TAG === 'sit' ? sit : process.env.ENV_TAG === 'uat' ? uat : prd
@@ -28,6 +28,8 @@ module.exports = {
     extensions: ['.js', '.vue', '.jsx', 'css', 'json', 'scss'],         // 查找模块时，不写模块后缀时的依次查找规则：js .css .json .vue
     alias: {
       '@': resolve('src')
+      // 'vue$': 'vue/dist/vue.esm.js'                                  // import Vue from ‘vue’ 这行代码被解析为 import Vue from ‘vue/dist/vue.esm.js’，直接指定了文件的位置，没有使用main字段默认的文件位置     compiler模式
+      // 'vue': 'vue/dist/vue.common.js'                                // import Vue from ‘vue’ 这行代码被解析为 import Vue from ‘vue/dist/vue.common.js’，直接指定了文件的位置，没有使用main字段默认的文件位置  runtime模式
     }
   },
   optimization: {
@@ -46,8 +48,7 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',                                           // vue-loader 15 版本 不支持oneof语法
-        options: {
-        }
+        options: {}
       },
       {
         oneOf: [

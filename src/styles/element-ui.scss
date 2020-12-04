@@ -1,4 +1,4 @@
-// cover some element-ui styles
+// 重写一些 element-ui 样式
 
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
@@ -46,7 +46,7 @@
   }
 }
 
-// to fixed https://github.com/ElemeFE/element/issues/2461
+// to fixed
 .el-dialog {
   transform: none;
   left: 0;
