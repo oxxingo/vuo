@@ -6,6 +6,8 @@ import Vue from 'vue/dist/vue.esm.js'
 // import './styles/element-variables.scss'
 // import '@/styles/index.scss'
 
+import './styles/main.css'
+
 import App from './App.vue'
 // // import store from './store'
 // import router from './router'
