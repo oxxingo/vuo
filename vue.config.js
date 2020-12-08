@@ -3,9 +3,13 @@ const WebpackMerge = require('webpack-merge')
 const ComConfig = require('./config/com.config')
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')  // 生产环境，自动压缩html、css、js压缩css，开发环境不会自动压缩。如果开发环境配置这个插件压缩css会导致js压缩失效，需要通过UglifyjsWebpackPlugin解决
 const UglifyjsWebpackPlugin = require('uglifyjs-webpack-plugin')        // webpack压缩js默认使用的这个插件
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩，此插件不支持HMR，若修改了样式文件，是不能即时在浏览器中显示出来的，需要手动刷新页面，用来替代extract-text-webpack-plugin，支持CSS和SourceMaps的按需加载  https://www.jianshu.com/p/e6b25ed1b4cc?utm_campaign=shakespeare
+
+const devMode = process.env.NODE_ENV !== 'production'
 
 if (process.env.NODE_ENV === 'development') {
   module.exports = WebpackMerge.merge(ComConfig, {
+    devtool: 'inline-source-map',
     optimization: {
       minimizer: [
         new UglifyjsWebpackPlugin({                            // js压缩，删除空行、变成一行
@@ -21,7 +25,7 @@ if (process.env.NODE_ENV === 'development') {
       host: 'local.vuo.com',                                   // 主机
       port: 443,		                                           // 端口
       historyApiFallback: {
-        rewrites: [{ from: /./, to: '/404.html' }]             // 用来应对返回404页面时定向到特定页面用的
+        rewrites: [{ from: /./, to: '/404.html' }]             // 用来应对返回404页面时定向到特定页面用的，当使用 HTML5 History API 时，任意的 404 响应都可能需要被替代为 index.html
       },
       hot: true,                                               // 开启HMR功能
       inline: true,                                            //
@@ -34,6 +38,7 @@ if (process.env.NODE_ENV === 'development') {
       compress: true,		                                       // 是否启动gzip压缩对所有的服务器资源，优点：对JS，CSS资源的压缩率很高，可以极大得提高文件传输的速率，从而提升web性能  缺点：服务端要对文件进行压缩，而客户端要进行解压，增加了两边的负载
       open: false,                                             // 是否自动打开浏览器
       // before: require('./mock/mock-server.js'),                // 在 webpack-dev-server 静态资源中间件处理之前，拦截部分请求返回特定内容
+      // hotOnly: true                                            // 如果模块热替换功能不生效，则不刷新网页
       proxy: {                                                 // 配置请求代理解决跨域
         '/api': {
           target: 'https://www.vuo.com',
@@ -50,6 +55,11 @@ if (process.env.NODE_ENV === 'development') {
 
 if (process.env.NODE_ENV === 'production') {
   module.exports = WebpackMerge.merge(ComConfig, {
-
+    devtool: 'inline-source-map',
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: devMode ? 'css/index.[hash:8].css' : 'css/index.[hash:8].css' // 抽离css样式，指定css生成目录与文件名
+      })
+    ]
   })
 }

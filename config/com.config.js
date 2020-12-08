@@ -2,12 +2,14 @@
 const { resolve } = require('path')
 const Webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩，此插件不支持HMR，若修改了样式文件，是不能即时在浏览器中显示出来的，需要手动刷新页面，用来替代extract-text-webpack-plugin，支持CSS和SourceMaps的按需加载  https://www.jianshu.com/p/e6b25ed1b4cc?utm_campaign=shakespeare
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')          // 每次打包前清空上一次打包后的文件
 const { VueLoaderPlugin } = require('vue-loader')                       // const VueLoaderPlugin = require('vue-loader/lib/plugin')，装了vue-loader就不要装vue-loader-plugin
 
 const { sit, uat, prd } = require('./env.config')
 const env = process.env.ENV_TAG === 'sit' ? sit : process.env.ENV_TAG === 'uat' ? uat : prd
+
+const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -37,14 +39,37 @@ module.exports = {
       },
       {
         oneOf: [
+          // {
+          //   test: /\.(html|ejs)$/,
+          //   use: ['html-loader']
+          // },
+          // {
+          //   test: /\.(css)$/,
+          //   use: ['style-loader', 'css-loader', 'postcss-loader']
+          // },
           {
             test: /\.(css)$/,
             use: [
-              // {
-              //   loader: 'style-loader'                               // loader从右向左执行、从下到上执行 创建style标签将css-loader生成的js模块化文件中的样式资源插入页面生效
-              //   options: { insertAt: 'top' }                         // 将生成的css插入<style>的顶部，这样<style>中自定义的css永远在底部，可以覆盖生成的样式
-              // },
-              MiniCssExtractPlugin.loader,                              // 既然通过link标签引入了，就与上面的insertAt: 'top' ，选择一种方式使用吧，必须配合plugin配置new MiniCssExtractPlugin()一起使用，斗则报错：No template for dependency: CssDependency
+              {
+                loader: 'style-loader',                              // loader从右向左执行、从下到上执行 创建style标签将css-loader生成的js模块化文件中的样式资源插入页面生效
+                options: { insert: 'top' }                           // 将生成的css插入<style>的顶部，这样<style>中自定义的css永远在底部，可以覆盖生成的样式，在webpack4.0中insertAt已经被废弃，使用insert函数
+              },
+              devMode ? {
+                loader: 'style-loader',                                 // loader从右向左执行、从下到上执行 创建style标签将css-loader生成的js模块化文件中的样式资源插入页面生效
+                options: {
+                  insert: function (element) {                          // 将生成的css插入<style>的顶部，这样<style>中自定义的css永远在底部，可以覆盖生成的样式
+                    const parent = document.querySelector('head')
+                    const lastInsertedElement = window._lastElementInsertedByStyleLoader
+                    if (!lastInsertedElement) {
+                      parent.insertBefore(element, parent.firstChild)
+                    } else if (lastInsertedElement.nextSibling) {
+                      parent.insertBefore(element, lastInsertedElement.nextSibling)
+                    } else {
+                      parent.appendChild(element)
+                    }
+                  }
+                }
+              } : MiniCssExtractPlugin.loader,                          // 既然通过link标签引入了，就与上面的insertAt: 'top' ，选择一种方式使用吧，必须配合plugin配置new MiniCssExtractPlugin()一起使用，斗则报错：No template for dependency: CssDependency
               'css-loader',                                             // css 模块化
               {
                 loader: 'postcss-loader',                               // css 自动加兼容性前缀
@@ -63,6 +88,20 @@ module.exports = {
               'sass-loader'                                             // sass 转 css  sass-loader less-loader stylus-loader
             ]
           },
+          // {
+          //   // test: /\.scss$/,
+          //   test: /\.(sa|sc|c)ss$/,
+          //   // 执行顺序是从右到左的，先scss-loader编译 --> css-loader --> style-loader放入页面中（document中）
+          //   // use: ['style-loader', 'css-loader', 'sass-loader']
+          //   use: [
+          //     'style-loader',
+          //     {
+          //       loader: 'css-loader'
+          //     },
+          //     // "css-loader",  //或者这样
+          //     'sass-loader'
+          //   ]
+          // },
           {
             test: /\.(js|jsx)$/,                                        // 处理js，jsx 需要安装 babel-loader @babel/core @babel/preset-env
             include: [resolve('src')],                                  // 默认匹配所有js ，所以可以只对指定目录下js起作用
@@ -124,14 +163,21 @@ module.exports = {
             }
           },
           {
-            test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+            test: /\.(png|jpe?g|gif|svg|webp)(\?.*)?$/,
             loader: 'url-loader',
             exclude: [resolve('src/icons')],                          // src/icons下的svg文件都不使用url-loader编译
             options: {                                                // 优点：减少请求数量，减轻服务器压力。 缺点：图片体积会更大，文件请求更慢。处理不了img src引入的图片，因为没有解析html文件
               limit: 8 * 1024,                                        // 图片小于8kb转为base64
-              outputPath: 'img/',                                     // 指定图片输出目录 publicPath + outputPath
+              outputPath: 'images/',                                  // 指定图片输出目录 publicPath + outputPath
               esModule: false,                                        // 因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs，所以解析时会出问题：[object Module]，需要关闭url-loader的es6模块化
               name: '[hash:8].[ext]'                                  // 不想图片默认名称那么长，可以重命名，[ext]取文件的原扩展名
+            }
+          },
+          {
+            test: /\.(mp3|mp4)(\?.*)?$/,
+            loader: 'file-loader',
+            options: {
+              name: './assets/[name].[ext]'                           // mp3不能用hash html只会用源码的文件名
             }
           }
         ]
@@ -156,9 +202,6 @@ module.exports = {
         removeAttributeQuotes: true                                  // 删除页面中属性上的无用的双引号
       },
       hash: true                                                     // 是否生成hash添加在所有引入文件地址的末尾，可以解决缓存问题 src="./index.js?5c5c5c5c5c5c5cccc"
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'css/index.[hash:8].css'                             // 抽离css样式，指定css生成目录与文件名
     }),
     new CleanWebpackPlugin()                                         // 删除webpack的output.path目录中的所有文件，以及每次成功重建后所有未使用的webpack资产
   ]

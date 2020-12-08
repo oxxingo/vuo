@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <router-view />
-    <img src="@/images/logo.png" alt="logo" />
+    <!-- <router-view /> -->
+    <img src="@/asserts/images/logo.png" alt="logo" />
     {{ msg }}
   </div>
 </template>
@@ -11,7 +11,7 @@ export default {
   name: 'App',
   data() {
     return {
-      msg: 'hello vue !!'
+      msg: 'hello vue 9 !!'
     }
   }
 }

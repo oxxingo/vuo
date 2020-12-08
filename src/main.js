@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue.esm.js'
+import Vue from 'vue'
 // import Cookies from 'js-cookie'
 
 // import 'normalize.css/normalize.css'                   // 让不同浏览器在渲染网页元素的时候形式更统一，相比于传统的CSS reset,它是一种现代的、为HTML5准备的优质替代方案。是一种CSS reset的替代方案
@@ -10,7 +10,7 @@ import './styles/main.css'
 
 import App from './App.vue'
 // // import store from './store'
-// import router from './router'
+import router from './router'
 
 // import i18n from './lang'
 // import './icons'
@@ -44,7 +44,7 @@ import App from './App.vue'
 
 // runtime
 new Vue({
-  // router,
+  router,
   // store,
   // i18n,
   render: (h) => h(App)
