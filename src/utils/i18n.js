@@ -1,9 +1,9 @@
-// translate router.meta.title, be used in breadcrumb sidebar tagsview
+// router.meta.title, 用于面包屑侧边栏标签视图中
 export function generateTitle(title) {
   const hasKey = this.$te('route.' + title)
 
   if (hasKey) {
-    // $t :this method from vue-i18n, inject in @/lang/index.js
+    // $t这个函数来自vue-i18n, 注入 @/lang/index.js
     const translatedTitle = this.$t('route.' + title)
 
     return translatedTitle

@@ -11,7 +11,6 @@ NProgress.configure({ showSpinner: false })
 const whiteList = ['/login', '/auth-redirect'] // 白名单 本地登录（/login）三方登录（/auth-redirect）
 
 router.beforeEach(async (to, from, next) => {
-  debugger
   NProgress.start()
   document.title = getPageTitle(to.meta.title)
 

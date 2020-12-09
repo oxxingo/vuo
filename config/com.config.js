@@ -1,8 +1,8 @@
 'use strict'
-const { resolve } = require('path')
+const path = require('path')
 const Webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩，此插件不支持HMR，若修改了样式文件，是不能即时在浏览器中显示出来的，需要手动刷新页面，用来替代extract-text-webpack-plugin，支持CSS和SourceMaps的按需加载  https://www.jianshu.com/p/e6b25ed1b4cc?utm_campaign=shakespeare
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')         // css 默认打包后在新创建的style标签中，可以使用此插件抽离css通过<link>引入, 但是不能自动压缩css文件，可使用optimize-css-assets-webpack-plugin插件压缩，此插件不支持HMR，若提取样式文件成单独文件（报错 No template for dependency: CssDependency https://blog.csdn.net/weixin_45615791/article/details/104294458），那么修改了样式文件，是不能即时在浏览器中显示出来的，需要手动刷新页面，用来替代extract-text-webpack-plugin，支持CSS和SourceMaps的按需加载  https://www.jianshu.com/p/e6b25ed1b4cc?utm_campaign=shakespeare
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')          // 每次打包前清空上一次打包后的文件
 const { VueLoaderPlugin } = require('vue-loader')                       // const VueLoaderPlugin = require('vue-loader/lib/plugin')，装了vue-loader就不要装vue-loader-plugin
 
@@ -10,6 +10,10 @@ const { sit, uat, prd } = require('./env.config')
 const env = process.env.ENV_TAG === 'sit' ? sit : process.env.ENV_TAG === 'uat' ? uat : prd
 
 const devMode = process.env.NODE_ENV !== 'production'
+
+function resolve(dir) {
+  return path.join(__dirname, '..', dir)
+}
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -30,6 +34,35 @@ module.exports = {
       // 'vue': 'vue/dist/vue.common.js'                                // import Vue from ‘vue’ 这行代码被解析为 import Vue from ‘vue/dist/vue.common.js’，直接指定了文件的位置，没有使用main字段默认的文件位置  runtime模式
     }
   },
+  optimization: {
+    splitChunks: {                                                      // 抽离公共代码，多页面应用才有抽离公共代码
+      chunks: 'async',                                                  // 共有三个值可选：initial(初始模块)、async(按需加载模块)和all(全部模块)
+      minSize: 30000,                                                   // 模块超过30k自动被抽离成公共模块
+      minChunks: 1,                                                     // 模块被引用>=1次，便分割
+      maxAsyncRequests: 5,                                              // 异步加载chunk的并发请求数量<=5
+      maxInitialRequests: 3,                                            // 一个入口并发加载的chunk数量<=3
+      automaticNameDelimiter: '~',                                      // 命名分隔符
+      cacheGroups: {                                                    // 缓存组
+        common: {                                                       // 公共代码配置，满足下面所有条件就抽离
+          chunks: 'initial',                                            // 公用代码从哪里开始找：initial，入口处
+          minSize: 0,                                                   // 公用代码大于0个字节
+          minChunks: 2                                                  // 公用代码引用了2次及以上
+        },
+        default: {                                                      // 模块缓存规则，设置为false，默认缓存组将禁用
+          minChunks: 2,                                                 // 模块被引用>=2次，拆分至vendors公共模块
+          priority: -20,                                                // 优先级
+          reuseExistingChunk: true                                      // 默认使用已有的模块
+        },
+        vendor: {
+          priority: 1,                                                  // 设置权重，权重高的先抽离， 防止受别的抽离影响
+          test: /node_modules/,                                         // 抽离第三方模块
+          chunks: 'initial',                                            // 第三方模块从哪里开始找
+          minSize: 0,                                                   // 第三方模块大于0个字节
+          minChunks: 2                                                  // 第三方模块引用了2次及以上
+        }
+      }
+    }
+  },
   module: {
     noParse: '/jquery|lodash/',                                         // 不解析指定模块的依赖关系，因为它不依赖其它模块，没有依赖关系，节省时间
     rules: [
@@ -48,7 +81,8 @@ module.exports = {
           //   use: ['style-loader', 'css-loader', 'postcss-loader']
           // },
           {
-            test: /\.(css)$/,
+            // test: /\.(css)$/,
+            test: /\.(sa|sc|c)ss$/,
             use: [
               {
                 loader: 'style-loader',                              // loader从右向左执行、从下到上执行 创建style标签将css-loader生成的js模块化文件中的样式资源插入页面生效
@@ -71,23 +105,19 @@ module.exports = {
                 }
               } : MiniCssExtractPlugin.loader,                          // 既然通过link标签引入了，就与上面的insertAt: 'top' ，选择一种方式使用吧，必须配合plugin配置new MiniCssExtractPlugin()一起使用，斗则报错：No template for dependency: CssDependency
               'css-loader',                                             // css 模块化
-              {
-                loader: 'postcss-loader',                               // css 自动加兼容性前缀
-                options: {
-                  sourceMap: true
-                }
-              }
-            ]
-          },
-          {
-            test: /\.(scss)$/,
-            use: [
-              MiniCssExtractPlugin.loader,
-              'css-loader',
               'postcss-loader',
-              'sass-loader'                                             // sass 转 css  sass-loader less-loader stylus-loader
+              'sass-loader'
             ]
           },
+          // {
+          //   test: /\.(scss)$/,
+          //   use: [
+          //     MiniCssExtractPlugin.loader,
+          //     'css-loader',
+          //     'postcss-loader',
+          //     'sass-loader'                                             // sass 转 css  sass-loader less-loader stylus-loader
+          //   ]
+          // },
           // {
           //   // test: /\.scss$/,
           //   test: /\.(sa|sc|c)ss$/,

@@ -2,6 +2,7 @@
   "name": "xoxo-web",
   "version": "1.0.0",
   "description": "",
+  "main": "main.js",
   "scripts": {
     "start": "npm run dev",
     "dev": "cross-env NODE_ENV=development ENV_TAG=dev webpack-dev-server --config vue.config.js",
@@ -15,6 +16,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.12.3",
+    "@babel/plugin-syntax-jsx": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "autoprefixer": "^10.0.1",
     "babel-eslint": "^10.1.0",
@@ -53,10 +55,19 @@
     "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.20",
+    "nprogress": "^0.2.0",
     "vue": "^2.6.12",
     "vue-i18n": "^8.22.2",
     "vue-router": "^3.4.9",
     "vue-style-loader": "^4.1.2",
     "vuex": "^3.6.0"
-  }
+  },
+  "browserslist": [
+    "defaults",
+    "not ie < 11",
+    "last 2 versions",
+    "> 1%",
+    "iOS 7",
+    "last 3 iOS versions"
+  ]
 }

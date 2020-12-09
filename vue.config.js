@@ -10,6 +10,7 @@ const devMode = process.env.NODE_ENV !== 'production'
 if (process.env.NODE_ENV === 'development') {
   module.exports = WebpackMerge.merge(ComConfig, {
     devtool: 'inline-source-map',
+    target: devMode ? 'web' : 'browserslist',                  // 解决有 .browserslistrc 文件或者在 package.json 里面配置了 browserslist 字段，webpack-dev-server无法热更新的bug
     optimization: {
       minimizer: [
         new UglifyjsWebpackPlugin({                            // js压缩，删除空行、变成一行
