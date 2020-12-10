@@ -14,7 +14,6 @@ import App from './App.vue'
 import store from './store'
 import router from './router'
 
-import i18n from './lang'
 import './icons'
 import './permission'
 import './utils/error-log'
@@ -27,8 +26,7 @@ import * as filters from './filters'
 // }
 
 Vue.use(Element, {
-  size: Cookies.get('size') || 'medium',
-  i18n: (key, value) => i18n.t(key, value)
+  size: Cookies.get('size') || 'medium'
 })
 
 Object.keys(filters).forEach(key => {
@@ -49,6 +47,5 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  i18n,
   render: (h) => h(App)
 }).$mount('#app')                                 // 把App.vue组件替换index.html中的id='app'元素

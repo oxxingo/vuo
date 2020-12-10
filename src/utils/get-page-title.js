@@ -1,13 +1,10 @@
-import defaultSettings from '@/settings'
-import i18n from '@/lang'
+import settings from '@/settings'
 
-const title = defaultSettings.title || 'Vue Element Admin'
+const title = settings.title || 'vuo'
 
 export default function getPageTitle(key) {
-  const hasKey = i18n.te(`route.${key}`)
-  if (hasKey) {
-    const pageName = i18n.t(`route.${key}`)
-    return `${pageName} - ${title}`
+  if (key) {
+    return `${key} - ${title}`
   }
-  return `${title}`
+  return title
 }

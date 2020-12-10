@@ -1,16 +1,11 @@
 <template>
-  <div id="app">
+  <div id="app" class="c-0">
     <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App',
-  data() {
-    return {
-      msg: 'hello vue 923 !!'
-    }
-  }
+  name: 'App'
 }
 </script>

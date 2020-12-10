@@ -8,7 +8,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false })
 
-const whiteList = ['/login', '/auth-redirect'] // 白名单 本地登录（/login）三方登录（/auth-redirect）
+const whiteList = ['/login'] // 白名单
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start()
@@ -16,7 +16,6 @@ router.beforeEach(async (to, from, next) => {
 
   // 用户是否已登录
   if (getToken()) {
-    // 如果已登录，则重定向到主页
     if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done()

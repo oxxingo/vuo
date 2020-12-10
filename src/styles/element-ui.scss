@@ -1,22 +1,27 @@
-// 重写一些 element-ui 样式
+// 重写 element-ui 样式
 .el-input {
   display: inline-block;
-  height: 30px;
-  border: 1px solid red;
   color: #000;
   input{
-    border: 0px;
+    border: 1px solid #DCDFE6;
     -webkit-appearance: none;
     border-radius: 0px;
-    padding: 12px 5px 12px 15px;
     color: #000;
-    caret-color: red; /* 改变输入框光标颜色，同时又不改变输入框里面的内容的颜色 */
+    /* 改变输入框光标颜色，同时又不改变输入框里面的内容的颜色 */
+    caret-color: #000;
+  }
+  input:focus{
+    border: 1px solid #DCDFE6;
+  }
+  input:hover{
+    border: 1px solid #DCDFE6;
   }
 }
-.el-input--medium .el-input__inner {
-  height: 30px;
-  line-height: 30px;
-}
-.el-input__icon{
-  font-size: 20px;
-}
+// .el-input--medium .el-input__inner {
+//   height: 40px !important;
+//   line-height: 40px !important;
+// }
+
+// .el-input__icon{
+//   font-size: 20px;
+// }

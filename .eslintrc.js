@@ -113,7 +113,7 @@ module.exports = {
     'no-path-concat': 2,                                                            // node中不能使用__dirname 或 _filename做路径拼接
     'no-redeclare': 2,                                                              // 不允许变量重复声明
     'no-regex-spaces': 2,                                                           // 正则表达式中不允许出现多个连续空格
-    'no-return-assign': [2, 'except-parens'],                                       // return 语句中不能有赋值表达式
+    // 'no-return-assign': [2, 'except-parens'],                                       // return 语句中不能有赋值表达式
     'no-self-compare': 2,                                                           // 禁止比较自身
     'no-sequences': 2,                                                              // 禁止使用逗号运算符
     'no-sparse-arrays': 2,                                                          // 禁止稀疏数组， [1, ,2]

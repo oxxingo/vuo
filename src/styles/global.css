@@ -1,3 +1,38 @@
+/* 页面初始化样式 */
+.page-init {
+  position: relative;
+  z-index: 0;
+}
+
+.p-a{
+  position: absolute;
+}
+.p-r{
+  position: relative;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+/* text-aligin */
+.t-l{
+  text-align: left;
+}
+.t-c{
+  text-align: center;
+}
+.t-r{
+  text-align: right;
+}
+
+/* color */
+.c-0{
+  color: #000;
+}
+
+/* float */
 .f-l { 
   float: left; 
 }
@@ -5,10 +40,60 @@
   float: right; 
 }
 
-.d-b {
+/* display */
+.d-i-b {
   display: inline-block;
 }
+.d-b {
+  display: block;
+}
 
+/* font */
 .fs-0 {
   font-size: 0;
+}
+.icon-fs-32 {
+  cursor: pointer;
+  font-size: 32px !important;
+}
+.wx {
+  color: #46BB36
+}
+.xl {
+  color: #D81E06;
+}
+.qq {
+  color: #1296db;
+}
+
+.opa-7 {
+  opacity: 0.7;
+}
+
+.bg-f {
+  background-color: #fff;
+}
+
+.b-rds-5{
+  border-radius: 5px;
+}
+
+/* 垂直水平居中 */
+.vhc{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+}
+
+.shadow{ 
+  box-shadow: #999 0px 0px 30px; 
+}
+
+/* 覆盖原生样式 */
+p {
+  margin-block-start: 0;
+  margin-block-end: 0;
 }

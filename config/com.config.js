@@ -28,6 +28,7 @@ module.exports = {
     modules: [resolve('node_modules')],                                 // 查找模块时，只在指定目录查找，缩小查找范围，不再去上一级目录找
     extensions: ['.js', '.vue', '.scss', '.json', '.css', '.jsx'],      // 查找模块时，不写模块后缀时的依次查找规则
     alias: {
+      '~': resolve('src'),
       '@': resolve('src'),
       'vue$': 'vue/dist/vue.esm.js'                                     // vue.esm.js（运行时 + 编译，包含编译器） vue.common.js（运行时，没有编译器）
       // 'vue$': 'vue/dist/vue.esm.js'                                  // import Vue from ‘vue’ 这行代码被解析为 import Vue from ‘vue/dist/vue.esm.js’，直接指定了文件的位置，没有使用main字段默认的文件位置     compiler模式
