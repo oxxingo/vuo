@@ -9,17 +9,17 @@ const common = {
 
 const sit = WebpackMerge.merge(common, {
   NODE_ENV: '"sit"',
-  BASEURL: '"https://xoxo-uat.xoxo.com"'
+  BASEURL: '"https://local.vuo.com/dev-api"'
 })
 
 const uat = WebpackMerge.merge(common, {
   NODE_ENV: '"uat"',
-  BASEURL: '"https://xoxo-uat.xoxo.com"'
+  BASEURL: '"https://xoxo-uat.xoxo.com/dev-api"'
 })
 
 const prd = WebpackMerge.merge(common, {
   NODE_ENV: '"prd"',
-  BASEURL: '"https://xoxo-uat.xoxo.com"'
+  BASEURL: '"https://xoxo-uat.xoxo.com/dev-api"'
 })
 
 module.exports =  {

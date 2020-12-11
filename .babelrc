@@ -1,0 +1,13 @@
+// .babelrc配置文件 主要是对预设(presets)和插件(plugins)进行配置
+// presets可以标识需要转换的源码使用了哪些新特性
+// plugins则指示babel如何对代码进行转换
+{
+  "presets": [
+    [ "@babel/preset-env" ],
+    [ "@babel/preset-react" ],
+    [ "@babel/typescript" ]
+  ],
+  "plugins": [
+    ["@babel/plugin-syntax-jsx"]
+  ]
+}

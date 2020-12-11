@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { setToken } from '@/utils/auth'
 export default {
   name: 'Login',
   data() {
@@ -57,7 +58,7 @@ export default {
       isRotate: false,
       isOpen: false,
       form: {
-        username: 'xxing',
+        username: 'admin',
         password: '111111'
       },
       rules: {
@@ -103,12 +104,14 @@ export default {
     handleLogin() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$store
-            .dispatch('user/login', this.form)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-            })
-            .catch(() => {})
+          setToken('admin-token')
+          this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+          // this.$store
+          //   .dispatch('user/login', this.form)
+          //   .then(() => {
+          //     this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+          //   })
+          //   .catch(() => {})
         } else {
           console.log('校验不通过 !!!')
           return false

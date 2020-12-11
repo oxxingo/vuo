@@ -4,7 +4,7 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 /* 布局 */
-// import Layout from '@/layout'
+import Layout from '@/layout'
 
 /* VueRouter 模块 */
 // import componentsRouter from './modules/components'
@@ -43,15 +43,10 @@ export const constantRoutes = [
   //   ]
   // },
   {
-    path: '/',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-  {
     path: '/login',
     component: () => import('@/views/login/index'),
     hidden: true
-  }
+  },
   // {
   //   path: '/auth-redirect',
   //   component: () => import('@/views/login/auth-redirect'),
@@ -67,19 +62,19 @@ export const constantRoutes = [
   //   component: () => import('@/views/error-page/401'),
   //   hidden: true
   // },
-  // {
-  //   path: '/', // localhost:9527
-  //   // component: Layout,
-  //   // redirect: '/dashboard',
-  //   children: [
-  //     {
-  //       path: 'dashboard',
-  //       component: () => import('@/views/dashboard/index'),
-  //       name: 'Dashboard',
-  //       meta: { title: 'dashboard', icon: 'dashboard', affix: true }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: 'dashboard', icon: 'dashboard', affix: true }
+      }
+    ]
+  }
   // {
   //   path: '/documentation',
   //   component: Layout,
@@ -383,7 +378,7 @@ export const asyncRoutes = [
   //   component: Layout,
   //   children: [
   //     {
-  //       path: 'https://github.com/PanJiaChen/vue-element-admin',
+  //       path: 'https://github.com/PanJiaChen/vuo',
   //       meta: { title: 'externalLink', icon: 'link' }
   //     }
   //   ]

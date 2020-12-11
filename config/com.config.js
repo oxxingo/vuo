@@ -25,6 +25,9 @@ module.exports = {
     chunkFilename: '[id].[name].chunk.js'                               // 用来打包require.ensure方法中引入的模块，如果该方法中没有引入任何模块则不会生成任何chunk块文件：https://www.cnblogs.com/toward-the-sun/p/6147324.html?utm_source=itdadao&utm_medium=referral
   },
   resolve: {
+    fallback: {                                                         // 由于在webpack5中移除了nodejs核心模块的polyfill自动引入，所以需要手动引入，如果打包过程中有页面使用到nodejs核心模块，需要进行相应配置，否则报错
+      path: require.resolve('path-browserify')                          // https://blog.csdn.net/qq_39807732/article/details/110089893
+    },
     modules: [resolve('node_modules')],                                 // 查找模块时，只在指定目录查找，缩小查找范围，不再去上一级目录找
     extensions: ['.js', '.vue', '.scss', '.json', '.css', '.jsx'],      // 查找模块时，不写模块后缀时的依次查找规则
     alias: {
@@ -146,13 +149,15 @@ module.exports = {
                 }
               },
               {
-                loader: 'babel-loader?optional=runtime&cacheDirectory', // babel-loader在执行的时候，可能会产生一些运行期间重复的公共文件，造成代码体积大冗余，同时也会减慢编译效率，可以加上cacheDirectory参数或使用 transform-runtime 插件(bablerc文件支持)
+                // loader: 'babel-loader?optional=runtime&cacheDirectory', // babel-loader在执行的时候，可能会产生一些运行期间重复的公共文件，造成代码体积大冗余，同时也会减慢编译效率，可以加上cacheDirectory参数或使用 @babel/plugin-transform-runtime 插件(babelrc文件支持)
+                loader: 'babel-loader',
                 options: {
+                  cacheDirectory: true,
                   presets: [										                        // 预设：指示babel做怎么样的兼容性处理
                     [
                       '@babel/preset-env',
                       {
-                        useBuiltIns: 'usage',		                        // 按需加载
+                        useBuiltIns: 'usage',		                        // false - 不做任何操作  entry - 根据浏览器版本的支持，将 polyfill 需求拆分引入，仅引入有浏览器不支持的polyfill   usage - 检测代码中 ES6/7/8 等的使用情况，仅仅加载代码中用到的 polyfill
                         corejs: {								                        // 指定 runtime-corejs 的版本，目前有 2 3 两个版本
                           version: 2
                         },
@@ -165,8 +170,7 @@ module.exports = {
                         }
                       }
                     ]
-                  ],
-                  cacheDirectory: true
+                  ]
                 }
               }
             ]

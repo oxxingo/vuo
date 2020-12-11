@@ -1,107 +1,107 @@
 <template>
-    <div class="drawer-container">
-        <div>
-            <h3 class="drawer-title">{{ $t('settings.title') }}</h3>
+  <div class="drawer-container">
+    <div>
+      <h3 class="drawer-title">系统布局配置</h3>
 
-            <div class="drawer-item">
-                <span>{{ $t('settings.theme') }}</span>
-                <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
-            </div>
+      <div class="drawer-item">
+        <span>主题色</span>
+        <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
+      </div>
 
-            <div class="drawer-item">
-                <span>{{ $t('settings.tagsView') }}</span>
-                <el-switch v-model="tagsView" class="drawer-switch" />
-            </div>
+      <div class="drawer-item">
+        <span>开启 Tags-View</span>
+        <el-switch v-model="tagsView" class="drawer-switch" />
+      </div>
 
-            <div class="drawer-item">
-                <span>{{ $t('settings.fixedHeader') }}</span>
-                <el-switch v-model="fixedHeader" class="drawer-switch" />
-            </div>
+      <div class="drawer-item">
+        <span>固定 Header</span>
+        <el-switch v-model="fixedHeader" class="drawer-switch" />
+      </div>
 
-            <div class="drawer-item">
-                <span>{{ $t('settings.sidebarLogo') }}</span>
-                <el-switch v-model="sidebarLogo" class="drawer-switch" />
-            </div>
-            <a v-if="isShowJob" href="https://panjiachen.github.io/vue-element-admin-site/zh/job/" target="_blank" class="job-link">
-                <el-alert title="部门目前非常缺人！有兴趣的可以点击了解详情。坐标: 字节跳动" type="success" :closable="false" />
-            </a>
+      <div class="drawer-item">
+        <span>侧边栏 Logo</span>
+        <el-switch v-model="sidebarLogo" class="drawer-switch" />
+      </div>
+      <a v-if="isShowJob" href="https://panjiachen.github.io/vuo-site/zh/job/" target="_blank" class="job-link">
+        <el-alert title="部门目前非常缺人！有兴趣的可以点击了解详情。坐标: 字节跳动" type="success" :closable="false" />
+      </a>
 
-            <div v-if="lang === 'zh'" class="drawer-item">
-                <span>菜单支持拼音搜索</span>
-                <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
-            </div>
-        </div>
+      <div v-if="lang === 'zh'" class="drawer-item">
+        <span>菜单支持拼音搜索</span>
+        <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 import ThemePicker from '@/components/ThemePicker'
 
 export default {
-    components: { ThemePicker },
-    data() {
-        return {}
+  components: { ThemePicker },
+  data() {
+    return {}
+  },
+  computed: {
+    isShowJob() {
+      return this.$store.getters.language === 'zh'
     },
-    computed: {
-        isShowJob() {
-            return this.$store.getters.language === 'zh'
-        },
-        fixedHeader: {
-            get() {
-                return this.$store.state.settings.fixedHeader
-            },
-            set(val) {
-                this.$store.dispatch('settings/changeSetting', {
-                    key: 'fixedHeader',
-                    value: val
-                })
-            }
-        },
-        tagsView: {
-            get() {
-                return this.$store.state.settings.tagsView
-            },
-            set(val) {
-                this.$store.dispatch('settings/changeSetting', {
-                    key: 'tagsView',
-                    value: val
-                })
-            }
-        },
-        sidebarLogo: {
-            get() {
-                return this.$store.state.settings.sidebarLogo
-            },
-            set(val) {
-                this.$store.dispatch('settings/changeSetting', {
-                    key: 'sidebarLogo',
-                    value: val
-                })
-            }
-        },
-        supportPinyinSearch: {
-            get() {
-                return this.$store.state.settings.supportPinyinSearch
-            },
-            set(val) {
-                this.$store.dispatch('settings/changeSetting', {
-                    key: 'supportPinyinSearch',
-                    value: val
-                })
-            }
-        },
-        lang() {
-            return this.$store.getters.language
-        }
+    fixedHeader: {
+      get() {
+        return this.$store.state.settings.fixedHeader
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'fixedHeader',
+          value: val
+        })
+      }
     },
-    methods: {
-        themeChange(val) {
-            this.$store.dispatch('settings/changeSetting', {
-                key: 'theme',
-                value: val
-            })
-        }
+    tagsView: {
+      get() {
+        return this.$store.state.settings.tagsView
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'tagsView',
+          value: val
+        })
+      }
+    },
+    sidebarLogo: {
+      get() {
+        return this.$store.state.settings.sidebarLogo
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'sidebarLogo',
+          value: val
+        })
+      }
+    },
+    supportPinyinSearch: {
+      get() {
+        return this.$store.state.settings.supportPinyinSearch
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'supportPinyinSearch',
+          value: val
+        })
+      }
+    },
+    lang() {
+      return this.$store.getters.language
     }
+  },
+  methods: {
+    themeChange(val) {
+      this.$store.dispatch('settings/changeSetting', {
+        key: 'theme',
+        value: val
+      })
+    }
+  }
 }
 </script>
 

@@ -5,6 +5,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { getToken } from '@/utils/auth'
 import getPageTitle from '@/utils/get-page-title'
+import auth from './auth.json'
 
 NProgress.configure({ showSpinner: false })
 
@@ -26,12 +27,9 @@ router.beforeEach(async (to, from, next) => {
       else {
         try {
           // 获取用户信息，roles必须是数组：['admin'] or ,['developer','editor']
-          const { roles } = await store.dispatch('user/getInfo')
+          // const { roles } = await store.dispatch('user/getInfo')
           // 基于角色生成可访问路由图
-          const accessRoutes = await store.dispatch(
-            'permission/generateRoutes',
-            roles
-          )
+          const accessRoutes = auth // await store.dispatch('permission/generateRoutes', roles)
           // 动态添加可访问路由
           router.addRoutes(accessRoutes)
 

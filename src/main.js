@@ -20,11 +20,6 @@ import './utils/error-log'
 
 import * as filters from './filters'
 
-// if (process.env.NODE_ENV === 'production') {
-//   const { mockXHR } = require('../mock')
-//   mockXHR()
-// }
-
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium'
 })
